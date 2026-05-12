@@ -10,6 +10,14 @@ export const createServer = () => {
 
     io.bind(engine);
 
+    io.on("connection", (socket) => { //.on es que el servidor está escuchando -> "mensaje connection"
+        console.log(`Cliente conectado (socket.id): ${socket.id}`); //pone en la consola del servidor el cliente conectado y el numero de id
+
+        socket.emit("saludo", "Hola desde el servidor"); //el servidor emite, les manda un mensaje a todos aquellos conectados
+
+        socket.on("chat", (msg)=> io.emit("chat", msg));
+    })
+
     const { fetch: engineFetch, websocket } = engine.handler();
 
     const server = Bun.serve({
@@ -23,7 +31,7 @@ export const createServer = () => {
                 return engineFetch(req, server);
             }
 
-/*            return new Response(
+            /*return new Response(
                 `<html><body><h1>Hola Mundo</h1></body></html>`,
                 {
                     headers: {"Content-Type": "text/html; charset=utf-8"},
