@@ -36,15 +36,20 @@
         
         socket.on("saludo", (payload) => {
            console.log("Mensaje del servidor", payload);
-        })
+        });
         
         socket.on("chat", (message) => {
            console.log("Mensaje del servidor", message);
-        })
+        });
 
-        socket.on("disconnect", (message) => {
+        socket.on("disconnect", () => {
             console.log("Perdimos la comunicación con el servidor");
-        })
+        });
+        
+        socket.on('BANDS_LIST', (bands) => {
+            console.clear();
+            console.table(bands);
+        });
             
     </script>
     

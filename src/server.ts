@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { Server as Engine } from "@socket.io/bun-engine";
 import { SERVER_CONFIG } from "./config/server-config";
+import { bandsService } from "./services/bands.services";
 
 export const createServer = () => {
 
@@ -16,6 +17,32 @@ export const createServer = () => {
         socket.emit("saludo", "Hola desde el servidor"); //el servidor emite, les manda un mensaje a todos aquellos conectados
 
         socket.on("chat", (msg)=> io.emit("chat", msg));
+
+        socket.emit("BANDS_LIST", bandsService.obtinereBands());
+
+        socket.on("ADD_BAND", (payload: {name: string}) => { //añadir bandas
+            if (payload.name.trim() === "") return
+
+            const band = bandsService.addereBand(payload.name)
+
+            io.emit("BANDS_LIST", bandsService.obtinereBands());
+        })
+
+        socket.on("VOTE_BAND", (payload: { id: string }) => {
+
+            const band = bandsService.addereVotumBand(payload.id)
+
+            if (band) {io.emit("BANDS_LIST", bandsService.obtinereBands());
+            }
+        })
+
+        socket.on("DELETE_BAND", (payload: { id: string }) => {
+
+            const band = bandsService.delereBand(payload.id)
+
+            if (band) {io.emit("BAND_LIST", bandsService.obtinereBands());
+            }
+        })
     })
 
     io.on("disconnect", (socket) => {
